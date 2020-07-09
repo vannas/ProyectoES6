@@ -10,7 +10,7 @@
     <style>
 
       .body {
-        background-image: url(file:img/background.png);          
+        background-image: url(img/background.png);          
         background-size: cover;
       }
     
@@ -229,20 +229,17 @@
         var donde_estoy;  
         
         //Geolocation
-
         function geolocate() {
           if (window.navigator && window.navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(onGeolocateSuccess, onGeolocateError);
           }
-        };    
-
+        }
         function onGeolocateSuccess(coordinates) {
           let { latitude, longitude } = coordinates.coords;
           donde_estoy = [latitude, longitude];
           coordenadas.Actual= donde_estoy;
           console.log('Found coordinates: ', coordenadas.Actual);
-        };
-
+        }
         function onGeolocateError(error) {
           console.warn(error.code, error.message);            
           if (error.code === 1) {
@@ -254,6 +251,18 @@
           }
         };
 
+        $('#partida').change(function(){
+          if($('select[name=origen]').val() == "Actual"){
+            geolocate();
+          }
+        });
+
+        $('#destino').change(function(){
+          if($('select[name=fin]').val() == "Actual"){
+            geolocate();
+          }
+        });
+
         /*Aquí capto el evento submit del botón y dentro del evento, 
         capto las opciones seleccionadas por el usuario y las envío
         al modal final*/
@@ -262,11 +271,6 @@
 
           let inicio=$('select[name=origen]').val();
           let destino=$('select[name=fin]').val();
-
-          if(inicio == "Actual" || destino == "Actual"){
-            geolocate();
-          };
-
           const auto=$('#modelo option:selected').html();
           const rendimiento=$('select[name=auto').val(); 
             
