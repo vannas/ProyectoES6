@@ -61,9 +61,17 @@
         text-shadow: 3px 3px #000;
       }
 
-      #modal1 .resp {
+      #modal1{
+        margin-top: 8%;
+        max-width: 40%;
+        background-color:#885073;
+        color: white;
+        text-align: justify;
+      }
+      
+      .resp {
         font-weight: bold;
-        color: crimson;
+        color: #e0cc9f;
       }
 
     </style>
@@ -176,12 +184,10 @@
 
             <div id="modal1" class="modal">
               <div class="modal-content">
-                <h4>Su Travesía</h4>
                 Desde <span class="resp" id="ciudadorigen"> </span> hasta <span class="resp" id="ciudaddestino"> </span> hay <span class="resp" id="kms"> </span> kilómetros por recorrer, y demorará alrededor de <span class="resp" id="tiempofinal"> </span> en llegar. <p>Con un rendimiento promedio de <span class="resp" id="rinde"> </span> km/litro, su <span class="resp" id="autito"> </span> necesitará cargar aproximadamente <span class="resp" id="bencina"> </span> litros de bencina para el viaje.</p> 
 
                 <a href="#!" class="modal-close right btn waves-effect waves-light red">Salir</a>
               </div>
-                
             </div>
                   
           </div>
@@ -233,7 +239,7 @@
           if (window.navigator && window.navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(onGeolocateSuccess, onGeolocateError);
           }
-        }
+        }        
         function onGeolocateSuccess(coordinates) {
           let { latitude, longitude } = coordinates.coords;
           donde_estoy = [latitude, longitude];
@@ -289,28 +295,26 @@
           let ubicacion_destino=coordenadas[destino]; 
 
           fetch(`https://maps.googleapis.com/maps/api/distancematrix/json?origins=${ubicacion_origen[0]},${ubicacion_origen[1]}&destinations=${ubicacion_destino[0]},${ubicacion_destino[1]}&key=AIzaSyAlDSRLGoUqLzoFZQlR7wvyRoNdsufoQls`, {})
-          
-          //extraigo datos de la API
-          .then(function(datos) {
-            return datos.json();
-          })
+              //extraigo datos de la API
+            .then(function(datos) {
+              return datos.json();
+            })
+            //puedo usar los datos a partir de aquí
+            .then(function(datos_json) {
+              const kilometros_viaje= Math.round(datos_json.rows[0].elements[0].distance.value / 1000);
+              const tiempo_viaje= datos_json.rows[0].elements[0].duration.text;
+              //mostrar distancia y el tiempo en el modal             
+              $('#tiempofinal').html(tiempo_viaje);
+              $('#kms').html(kilometros_viaje);
 
-          //puedo usar los datos a partir de aquí
-          .then(function(datos_json) {
-            const kilometros_viaje= Math.round(datos_json.rows[0].elements[0].distance.value / 1000);
-            const tiempo_viaje = datos_json.rows[0].elements[0].duration.text;
-            //mostrar distancia y el tiempo en el modal             
-            $('#tiempofinal').html(tiempo_viaje);
-            $('#kms').html(kilometros_viaje);
+              const bencina = Math.round(kilometros_viaje/rendimiento);
+              $('#bencina').html(bencina);
+            })
 
-            const bencina = Math.round(kilometros_viaje/rendimiento);
-            $('#bencina').html(bencina);
-          })
-
-          .catch(function(error) {
-            alert(`Error: ${error}`);
-          })
-                    
+            .catch(function(error) {
+              alert(`Error: ${error}`);
+            })
+                   
         });
       });           
       
